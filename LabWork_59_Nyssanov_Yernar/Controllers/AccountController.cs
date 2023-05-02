@@ -73,7 +73,9 @@ public class AccountsController : Controller
     [AllowAnonymous]
     public IActionResult Login()
     {
-        return View();
+        if (!User.Identity.IsAuthenticated) 
+            return View();
+        return RedirectToAction("Index");
     }
 
     [HttpPost]
@@ -86,11 +88,13 @@ public class AccountsController : Controller
         if (model.Email is null) model.Email = model.Name;
 
         if (!string.IsNullOrEmpty(model.Name))
+        {
             user = (await _userManager.FindByNameAsync(model.Name))!;
-        if (!string.IsNullOrEmpty(model.Email))
-            user = (await _userManager.FindByEmailAsync(model.Email))!;
+            if (user is null)
+                user = (await _userManager.FindByEmailAsync(model.Email))!;
+        }
         
-        if (user != null)
+        if (user is not null)
         {
             var signInResult = await _signInManager.PasswordSignInAsync(
                 user,
@@ -101,8 +105,8 @@ public class AccountsController : Controller
             if (signInResult.Succeeded) 
                 return RedirectToAction("Index", "Accounts");
         }
-        ModelState.AddModelError(string.Empty, "Некорректные логин или пароль");
-        return View(model);
+        ViewBag.LogIn = "Некорректные логин или пароль";
+        return View();
     }
 
 
@@ -117,5 +121,13 @@ public class AccountsController : Controller
     {
         return View();
     }
+
+    [HttpGet]
+    public IActionResult About()
+    {
+        var user = _userManager.GetUserAsync(User).Result;
+        return View(user);
+    }
+
 
 }
