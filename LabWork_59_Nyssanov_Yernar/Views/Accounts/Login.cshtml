@@ -1,0 +1,34 @@
+@model LabWork_59_Nyssanov_Yernar.ViewModel.User.LoginViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h2 class="text-center">Вход</h2>
+        <form method="post" class="was-validated" asp-action="Login" enctype="multipart/form-data">
+            <div class="form-group">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-control" id="Name" required/>
+                <span asp-validation-for="@Model.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" id="Password" required/>
+                <span asp-validation-for="@Model.Password" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-outline-success mt-3">Создать</button>
+        </form>
+    </div>
+    <div>
+        <h5 class="font-weight-bold">У вас еще нет аккаунта?</h5> <a asp-action="Register">Зарегестрируйтесь!</a> 
+    </div>
+</div>
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

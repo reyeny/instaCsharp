@@ -1,3 +1,4 @@
+using LabWork_59_Nyssanov_Yernar.DbContext;
 using LabWork_59_Nyssanov_Yernar.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<>(options =>//сюда
+builder.Services.AddDbContext<ProjectContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("Default")))
     .AddIdentity<User, IdentityRole>(options =>
     {
@@ -18,7 +19,7 @@ builder.Services.AddDbContext<>(options =>//сюда
         options.Password.RequireUppercase = false;
         options.Password.RequireNonAlphanumeric = false;
     })
-    .AddEntityFrameworkStores<>();//туда
+    .AddEntityFrameworkStores<ProjectContext>();
 
 
 var app = builder.Build();
@@ -40,6 +41,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Accounts}/{action=Login}/{id?}");
 
 app.Run();
