@@ -52,6 +52,14 @@ public class AccountsController : Controller
                 ViewBag.NameReturn = "Введите другой логин";
                 return View("Log/Register");
             }
+            
+            var checkOnEmail = await _userManager.FindByEmailAsync(model.Email);
+            if (checkOnEmail is not null)
+            {
+                ViewBag.EmailReturn = "Эта почта уже занята";
+                return View("Log/Register");
+            }
+            
             user = new User
             {
                 Email = model.Email,

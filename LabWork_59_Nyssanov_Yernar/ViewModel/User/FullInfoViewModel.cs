@@ -6,8 +6,8 @@ namespace LabWork_59_Nyssanov_Yernar.ViewModel.User;
 public class FullInfoViewModel
 {
     [DataType(DataType.PhoneNumber)]
-    [Required(ErrorMessage = "Укажите номер телефона")]
     [Display(Name = "Укажите номер телефона")]
+    [RegularExpression(@"^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$", ErrorMessage = "Укажите правильный формат номера телефона +7 (XXX) XXX-XX-XX")]
     public string UserNumber { get; set; }
     
     [Required(ErrorMessage = "Введите ваше имя")]

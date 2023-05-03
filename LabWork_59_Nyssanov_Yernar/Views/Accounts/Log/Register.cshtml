@@ -9,6 +9,14 @@
 <div class="row">
     <div class="col-md-6 offset-md-3">
         <h2 class="text-center">Регистрация</h2>
+        @if (ViewBag.NameReturn is not null)
+        {
+            <p class="alert alert-danger">@ViewBag.NameReturn</p>
+        }
+        @if (ViewBag.EmailReturn is not null)
+        {
+            <p class="alert alert-danger">@ViewBag.EmailReturn</p>
+        }
         <form method="post" class="was-validated" asp-action="Register" enctype="multipart/form-data">
             <div class="form-group">
                 <label asp-for="Name"></label>

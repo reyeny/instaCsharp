@@ -25,4 +25,8 @@
       <None Include="wwwroot\img\logo.png" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Remove="wwwroot\images\95d57183-4031-4494-8e62-4058f4ec1140.jpg" />
+    </ItemGroup>
+
 </Project>
