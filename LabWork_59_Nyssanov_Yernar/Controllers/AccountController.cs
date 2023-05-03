@@ -26,7 +26,7 @@ public class AccountsController : Controller
     [AllowAnonymous]
     public IActionResult Register()
     {
-        return View();
+        return View("Log/Register");
     }
 
     [HttpPost]
@@ -46,14 +46,21 @@ public class AccountsController : Controller
             var imageUrl = Url.Content($"/images/{fileName}");
             model.PathToImage = imageUrl;
 
-            User user = new()
+            var user = await _userManager.FindByNameAsync(model.Name);
+            if (user is not null)
+            {                
+                ViewBag.NameReturn = "Введите другой логин";
+                return View("Log/Register");
+            }
+            user = new User
             {
                 Email = model.Email,
                 UserName = model.Name,
-                PathToFile = model.PathToImage
+                PathToFile = model.PathToImage,
             };
-            
+
             var result = await _userManager.CreateAsync(user, model.Password);
+            
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, true);
@@ -66,7 +73,7 @@ public class AccountsController : Controller
             }
         }
 
-        return View(model);
+        return View("Log/Register", model);
     }
 
     [HttpGet]
@@ -74,7 +81,7 @@ public class AccountsController : Controller
     public IActionResult Login()
     {
         if (!User.Identity.IsAuthenticated) 
-            return View();
+            return View("Log/Login");
         return RedirectToAction("Index");
     }
 
@@ -106,7 +113,7 @@ public class AccountsController : Controller
                 return RedirectToAction("Index", "Accounts");
         }
         ViewBag.LogIn = "Некорректные логин или пароль";
-        return View();
+        return View("Log/Login");
     }
 
 
@@ -128,6 +135,29 @@ public class AccountsController : Controller
         var user = _userManager.GetUserAsync(User).Result;
         return View(user);
     }
+    
+    [HttpGet]
+    public IActionResult FullInfo()
+    {
+        return View();
+    }
 
+    [HttpPost]
+    public async Task<IActionResult> FullInfo(FullInfoViewModel model)
+    {
+        var user = new User();
+        if (ModelState.IsValid)
+        {
+            user = _userManager.GetUserAsync(User).Result;
+            
+            user!.RealName = model.Name;
+            user.PhoneNumber = model.UserNumber;
+            user.UserTitle = model.UserAbout;
+            user.Gender = model.Gender;
+        }
+
+        var result = await _userManager.UpdateAsync(user);
+        return RedirectToAction("About");
+    }
 
 }

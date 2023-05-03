@@ -1,0 +1,35 @@
+@model LabWork_59_Nyssanov_Yernar.ViewModel.User.FullInfoViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h2 class="text-center">Доп Инфа</h2>
+        <form method="post" class="was-validated" asp-action="FullInfo" enctype="multipart/form-data">
+            <div class="form-group">
+                <label asp-for="Name"></label>
+                <input asp-for="Name" class="form-control" id="Name" required/>
+                <span asp-validation-for="@Model.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserAbout"></label>
+                <input asp-for="UserAbout" class="form-control" id="UserAbout" required/>
+                <span asp-validation-for="@Model.UserAbout" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserNumber"></label>
+                <input asp-for="UserNumber" class="form-control" id="UserNumber" required/>
+                <span asp-validation-for="UserNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Gender"></label>
+                <input asp-for="Gender" class="form-control" id="Gender" type="hidden" value="0" required/>
+                <span asp-validation-for="@Model.Gender" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-outline-success mt-3">Создать</button>
+        </form>
+    </div>
+</div>

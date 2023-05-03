@@ -230,7 +230,18 @@ namespace LabWork_59_Nyssanov_Yernar.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
+                    b.Property<int>("Gender")
+                        .HasColumnType("integer");
+
                     b.Property<string>("PathToFile")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RealName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserTitle")
                         .IsRequired()
                         .HasColumnType("text");
 
