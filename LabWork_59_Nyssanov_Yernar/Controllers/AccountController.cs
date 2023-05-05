@@ -1,8 +1,12 @@
+using LabWork_59_Nyssanov_Yernar.DbContext;
 using LabWork_59_Nyssanov_Yernar.Models;
+using LabWork_59_Nyssanov_Yernar.Models.PostUser;
+using LabWork_59_Nyssanov_Yernar.ViewModel.Post;
 using LabWork_59_Nyssanov_Yernar.ViewModel.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LabWork_59_Nyssanov_Yernar.Controllers;
 
@@ -11,15 +15,18 @@ public class AccountsController : Controller
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IHostEnvironment _hostEnvironment;
+    private readonly ProjectContext _projectContext;
 
     public AccountsController(
         UserManager<User> userManager,
         SignInManager<User> signInManager, 
-        IHostEnvironment hostEnvironment)
+        IHostEnvironment hostEnvironment, 
+        ProjectContext projectContext)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _hostEnvironment = hostEnvironment;
+        _projectContext = projectContext;
     }
 
     [HttpGet]
@@ -138,9 +145,15 @@ public class AccountsController : Controller
     }
 
     [HttpGet]
-    public IActionResult About()
+    public async Task<IActionResult> About()
     {
-        var user = _userManager.GetUserAsync(User).Result;
+        var user = await _userManager.GetUserAsync(User);
+        user!.Posts = _projectContext.Posts
+            .Include(post => post.Likes)
+            .Include(post => post.Comments)
+            .Where(post => post.User!.Id == user.Id)
+            .ToList();
+
         return View(user);
     }
     
@@ -168,4 +181,118 @@ public class AccountsController : Controller
         return RedirectToAction("About");
     }
 
+    [HttpGet]
+    public IActionResult CreatePost()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreatePost(CreatePostViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            var imagesPath = Path.Combine(wwwrootPath, "postImages");
+            if (!Directory.Exists(imagesPath)) Directory.CreateDirectory(imagesPath);
+            var fileName = Guid.NewGuid() + Path.GetExtension(model.PostCover.FileName);
+            var filePath = Path.Combine(_hostEnvironment.ContentRootPath, "wwwroot/postImages", fileName);
+            await using var stream = new FileStream(filePath, FileMode.Create);
+            await model.PostCover.CopyToAsync(stream);
+            
+            var imageUrl = Url.Content($"/postImages/{fileName}");
+
+            var user = await _userManager.GetUserAsync(User);
+
+            Post post = new()
+            {
+                User = user,
+                Description = model.Title,
+                CreatedDate = DateTime.Now.ToUniversalTime(),
+                ImagePath = imageUrl,
+                UserId = user!.Id
+            };
+            _projectContext.Posts.Add(post);
+            await _projectContext.SaveChangesAsync();
+            
+            user.Posts.Add(post);
+            await _userManager.UpdateAsync(user);
+        }
+        return RedirectToAction("Index");
+    }
+
+    [HttpGet]
+    public IActionResult FillInfoPost(string id)
+    {
+        if (_projectContext.Posts.Any(post => post.User.Id == id))
+        {
+            var post = _projectContext.Posts
+                .Include(post => post.User)
+                .Include(post => post.Likes)
+                .Include(post => post.Comments)
+                .FirstOrDefault(post => post.User.Id == id);
+            LeaveACommentViewModel postComment = new() { Post = post! };
+            return View(postComment);
+        }
+        return NotFound();
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> LeaveAComment(LeaveACommentViewModel model)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var post = _projectContext.Posts
+            .Include(post => post.User)
+            .Include(post => post.Likes)
+            .Include(post => post.Comments)
+            .FirstOrDefault(post => post.Id == model.Post.Id);
+
+        Comment comment = new()
+        {
+            Description = model.Comment,
+            Post = post!,
+            CreatedDate = DateTime.Now.ToUniversalTime(),
+            User = user!,
+            UserId = user!.Id,
+            PostId = post!.Id
+        };
+        _projectContext.Comments.Add(comment);
+        await _projectContext.SaveChangesAsync();
+
+        return RedirectToAction("FillInfoPost", new { id = post.User!.Id });
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> Like(LeaveACommentViewModel model)
+    {
+        
+        var user = await _userManager.GetUserAsync(User);
+        var post = await _projectContext.Posts.FindAsync(model.Post.Id);
+        if (post is null) return NotFound();
+
+        var checkOnLike = _projectContext.Likes
+            .Where(like1 => like1.UserId == user!.Id && like1.PostId == post.Id)
+            .Any(like1 => like1.PostId == model.Post.Id);
+
+        if (checkOnLike)
+        {
+            var likeRemove = _projectContext.Likes.FirstOrDefault(like1 => like1.PostId == model.Post.Id)!;
+            _projectContext.Remove(likeRemove);
+            await _projectContext.SaveChangesAsync();
+            return RedirectToAction("FillInfoPost", new { id = post.User!.Id });
+        }
+        
+        Like like = new()
+        {
+            UserId = user!.Id,
+            User = user,
+            Post = post!,
+            PostId = post!.Id
+        };
+        
+        _projectContext.Likes.Add(like);
+        await _projectContext.SaveChangesAsync();
+        
+        return RedirectToAction("FillInfoPost", new { id = post.User!.Id });
+    }
 }

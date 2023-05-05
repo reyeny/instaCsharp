@@ -1,0 +1,64 @@
+@model LabWork_59_Nyssanov_Yernar.ViewModel.Post.LeaveACommentViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<div class="relative">
+	<div class="feed">
+
+		<div class="posting">
+			<div class="post">
+				<div class="post-header">
+					<img src="@Model.Post.User!.PathToFile" alt="Profile photo">
+					<a asp-action="About" class="post-header-author user text-decoration-none">@Model.Post.User.UserName</a>
+				</div>
+				<div class="post-image">
+					<img src="@Model.Post.ImagePath" alt="Profile photo">
+				</div>
+				<div class="post-footer">
+					<div class="post-footer-icons">
+						<a href="#">
+							 <form asp-action="Like" method="post" enctype="multipart/form-data"> 
+								 <button type="submit">Лайкнуть</button>
+								 <input type="hidden" asp-for="Post.Id" value="@Model.Post.Id">
+							 </form> 
+						</a>
+						<a href="#">
+							<svg aria-label="Comment" class="_8-yf5 " fill="#262626" height="24" viewBox="0 0 48 48" width="24"><path clip-rule="evenodd" d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 2.8-11.1C47.5 11 37 .5 24 .5S.5 11 .5 24 11 47.5 24 47.5c4 0 7.8-1 11.1-2.8l11 2.8c.8.2 1.6-.6 1.4-1.4zm-3-22.1c0 4-1 7-2.6 10-.2.4-.3.9-.2 1.4l2.1 8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 1-5.2 2.6-10 2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 3.5 24 3.5 44.5 12.7 44.5 24z" fill-rule="evenodd"></path></svg>
+						</a>
+						
+					</div>
+					<div class="post-footer-likes">
+						<button><span>@Model.Post.Likes.Count</span> likes</button>
+					</div>
+					<div class="description-and-comments" id="DesComment">
+						<div class="post-footer-description">
+							<a href="#"  class="post-footer-description-author user">@Model.Post.User.UserName</a>
+							<span>@Model.Post.Description</span>
+						</div>
+						<div class="comments">
+							@foreach (var comment in @Model.Post.Comments)
+							{
+								<div class="comment-post">
+									<a href="#" class="comment-author user">@comment.User.UserName</a>
+									&nbsp;
+									<span class="comment-text">@comment.Description</span>
+								</div>
+							}
+						</div>
+					</div>
+					<div class="post-footer-relase"><a href="#">@(DateTime.Now.Day - Model.Post.CreatedDate.Day) days ago</a></div>
+					<div class="post-footer-add-comment">
+						<form id="comment" method="post" asp-action="LeaveAComment" enctype="multipart/form-data">
+							<textarea aria-label="Add a comment…" placeholder="Add a comment…" class="post-footer-comment-input" asp-for="Comment"></textarea>
+							<button type="submit">Post</button>
+							<input type="hidden" asp-for="Post.Id" value="@Model.Post.Id"/>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

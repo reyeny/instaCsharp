@@ -14,7 +14,7 @@
 <div class="profile-wrap">
     <div class="profile-avatar">
         <div class="circ-story circ-gradient"></div>
-        <img src="@Model.PathToFile">
+        <img src="@Model.PathToFile" alt="фото профиля">
     </div>
     <div class="profile-info">
         <div class="profile-title mb-1rem">
@@ -28,7 +28,7 @@
         <ul class="profile-numbers mb-1rem">
             <li>
                 <a href="#">
-                    <span class="profile-posts">-</span>
+                    <span class="profile-posts">@Model.Posts.Count</span>
                     posts
                 </a>
             </li>
@@ -53,27 +53,6 @@
         </div>
     </div>
 </div>
-<!-- RESPONSIVE PROFILE NUMBERS -->
-<ul class="profile-numbers responsive-profile">
-    <li>
-        <a href="#">
-            <span class="profile-posts">6</span>
-            posts
-        </a>
-    </li>
-    <li>
-        <a href="#">
-            <span class="profile-followers">800B</span>
-            followers
-        </a>
-    </li>
-    <li>
-        <a href="#">
-            <span class="profile-following">10</span>
-            following
-        </a>
-    </li>
-</ul>
 <!-- CONTENT -->
 <div class="content-tabs inner-wrap">
     <div class="tabs">
@@ -104,59 +83,19 @@
 <!-- GALLERY -->
 <div class="gallery-pics inner-wrap">
     <div class="pic-wrap">
-        <div class="pic">
-            <div class="opacity-overlay">
-                <img src="https://source.unsplash.com/1600x900/?beach">
+        @foreach (var post in Model.Posts)
+        {
+            <div class="pic">
+                <div class="opacity-overlay">
+                    <a asp-action="FillInfoPost" asp-route-id="@Model.Id">
+                        <img src="@post.ImagePath">
+                    </a>
+                </div>
+                <div class="icons">
+                    <i class="fa fa-heart">@post.Likes.Count ❤</i>
+                    <i class="fa fa-comment">@post.Comments.Count 🗨️</i>
+                </div>
             </div>
-            <div class="icons">
-                <i class="fa fa-heart">200m</i>
-                <i class="fa fa-comment">2m</i>
-            </div>
-        </div>
-        <div class="pic">
-            <div class="opacity-overlay">
-                <img src="https://source.unsplash.com/1600x900/?pool">
-            </div>
-            <div class="icons">
-                <i class="fa fa-heart">199m</i>
-                <i class="fa fa-comment">20m</i>
-            </div>
-        </div>
-        <div class="pic">
-            <div class="opacity-overlay">
-                <img src="https://source.unsplash.com/1600x900/?summer">
-            </div>
-            <div class="icons">
-                <i class="fa fa-heart">68b</i>
-                <i class="fa fa-comment">20m</i>
-            </div>
-        </div>
-        <div class="pic">
-            <div class="opacity-overlay">
-                <img src="https://source.unsplash.com/1600x900/?food">
-            </div>
-            <div class="icons">
-                <i class="fa fa-heart">400k</i>
-                <i class="fa fa-comment">90k</i>
-            </div>
-        </div>
-        <div class="pic">
-            <div class="opacity-overlay">
-                <img src="https://source.unsplash.com/1600x900/?hotels">
-            </div>
-            <div class="icons">
-                <i class="fa fa-heart">899m</i>
-                <i class="fa fa-comment">100m</i>
-            </div>
-        </div>
-        <div class="pic">
-            <div class="opacity-overlay">
-                <img src="https://source.unsplash.com/1600x900/?resort">
-            </div>
-            <div class="icons">
-                <i class="fa fa-heart">120m</i>
-                <i class="fa fa-comment">6m</i>
-            </div>
-        </div>
+        }
     </div>
 </div>
