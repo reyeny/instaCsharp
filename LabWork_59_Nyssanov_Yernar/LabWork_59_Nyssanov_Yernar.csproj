@@ -23,11 +23,14 @@
 
     <ItemGroup>
       <None Include="wwwroot\img\logo.png" />
-      <None Include="wwwroot\suit-heart-fill.svg" />
     </ItemGroup>
 
     <ItemGroup>
       <Content Remove="wwwroot\images\95d57183-4031-4494-8e62-4058f4ec1140.jpg" />
+      <Content Remove="wwwroot\images\7bedc141-48fd-4904-850d-85250d02010a.jpg" />
+      <Content Remove="wwwroot\postImages\8b4742b0-d321-48fb-b23c-18a431b0352f.jpg" />
+      <Content Remove="wwwroot\postImages\13356db1-0cb0-4ae9-ab86-b41159e4f2fd.jpg" />
+      <Content Remove="wwwroot\postImages\a031e6c5-9b4d-424f-be78-eb597382c27e.jpg" />
     </ItemGroup>
 
     <ItemGroup>

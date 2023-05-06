@@ -4,9 +4,9 @@ public class Follow
 {
     public int Id { get; set; }
     
-    public string UserId { get; set; }
-    public User User { get; set; }
+    public string FolowingUserId { get; set; }
+    public User FollowingUser { get; set; }
     
-    public string FollowUserId { get; set; }
-    public User FollowUser { get; set; }
+    public string FollowerUserId { get; set; }
+    public User FollowerUser { get; set; }
 }

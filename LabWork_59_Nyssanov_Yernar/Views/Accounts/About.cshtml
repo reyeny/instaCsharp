@@ -1,4 +1,4 @@
-@model LabWork_59_Nyssanov_Yernar.Models.User?
+@model LabWork_59_Nyssanov_Yernar.ViewModel.Post.AboutViewModel
 
 @{
     ViewBag.Title = "title";
@@ -14,11 +14,11 @@
 <div class="profile-wrap">
     <div class="profile-avatar">
         <div class="circ-story circ-gradient"></div>
-        <img src="@Model.PathToFile" alt="фото профиля">
+        <img src="@Model.User.PathToFile" alt="фото профиля">
     </div>
     <div class="profile-info">
         <div class="profile-title mb-1rem">
-            <h2>@Model.UserName</h2>
+            <h2>@Model.User.UserName</h2>
             <button class="cta">Follow</button>
             <button class="btn btn-outline-danger">
                 <a asp-action="FullInfo" asp-controller="Accounts" class="text-black">Add Info</a>
@@ -28,27 +28,27 @@
         <ul class="profile-numbers mb-1rem">
             <li>
                 <a href="#">
-                    <span class="profile-posts">@Model.Posts.Count</span>
+                    <span class="profile-posts">@Model.User.Posts.Count</span>
                     posts
                 </a>
             </li>
             <li>
                 <a href="#">
-                    <span class="profile-followers">-</span>
+                    <span class="profile-followers">@Model.Folowing.Count</span>
                     followers
                 </a>
             </li>
             <li>
                 <a href="#">
-                    <span class="profile-following">-</span>
+                    <span class="profile-following">@Model.Follows.Count</span>
                     following
                 </a>
             </li>
         </ul>
         <div class="profile-bio">
-            <h1 class="profile-name">@Model.RealName</h1>
+            <h1 class="profile-name">@Model.User.RealName</h1>
             <span class="profile-desc">
-                @Model.UserTitle
+                @Model.User.UserTitle
             </span>
         </div>
     </div>
@@ -83,11 +83,11 @@
 <!-- GALLERY -->
 <div class="gallery-pics inner-wrap">
     <div class="pic-wrap">
-        @foreach (var post in Model.Posts)
+        @foreach (var post in Model.User.Posts)
         {
             <div class="pic">
                 <div class="opacity-overlay">
-                    <a asp-action="FillInfoPost" asp-route-id="@Model.Id">
+                    <a asp-action="FillInfoPost" asp-route-id="@post.Id">
                         <img src="@post.ImagePath">
                     </a>
                 </div>

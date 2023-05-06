@@ -12,7 +12,7 @@
 			<div class="post">
 				<div class="post-header">
 					<img src="@Model.Post.User!.PathToFile" alt="Profile photo">
-					<a asp-action="About" class="post-header-author user text-decoration-none">@Model.Post.User.UserName</a>
+					<a asp-action="About" class="post-header-author user text-decoration-none" asp-route-userId="@Model.Post.User.Id">@Model.Post.User.UserName</a>
 				</div>
 				<div class="post-image">
 					<img src="@Model.Post.ImagePath" alt="Profile photo">
@@ -22,6 +22,7 @@
 						<a href="#">
 							 <form asp-action="Like" method="post" enctype="multipart/form-data"> 
 								 <button type="submit">Лайкнуть</button>
+								 <input type="hidden" asp-for="Post.User.Id" value="@Model.Post.User.Id">
 								 <input type="hidden" asp-for="Post.Id" value="@Model.Post.Id">
 							 </form> 
 						</a>
@@ -55,6 +56,7 @@
 							<textarea aria-label="Add a comment…" placeholder="Add a comment…" class="post-footer-comment-input" asp-for="Comment"></textarea>
 							<button type="submit">Post</button>
 							<input type="hidden" asp-for="Post.Id" value="@Model.Post.Id"/>
+							<input type="hidden" asp-for="Post.User.Id" value="@Model.Post.User.Id">
 						</form>
 					</div>
 				</div>

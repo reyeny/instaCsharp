@@ -3,6 +3,7 @@ using System;
 using LabWork_59_Nyssanov_Yernar.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LabWork_59_Nyssanov_Yernar.Migrations
 {
     [DbContext(typeof(ProjectContext))]
-    partial class ProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230506152839__AddFields")]
+    partial class _AddFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,7 +71,7 @@ namespace LabWork_59_Nyssanov_Yernar.Migrations
                     b.Property<string>("FollowingUserId")
                         .HasColumnType("text");
 
-                    b.Property<string>("FolowingUserId")
+                    b.Property<string>("FolowwingUserId")
                         .IsRequired()
                         .HasColumnType("text");
 

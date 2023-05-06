@@ -139,24 +139,54 @@ public class AccountsController : Controller
         return RedirectToAction("Login");
     }
 
+    [HttpGet]
     public IActionResult Index()
     {
-        return View();
+        var users = _projectContext.Users.ToList();
+        var user = _userManager.GetUserAsync(User).Result;
+        users.Remove(user!);
+
+        FeedViewModel model = new()
+        {
+            Users = users,
+            meUser = user!
+        };
+        
+        return View(model);
     }
 
     [HttpGet]
-    public async Task<IActionResult> About()
+    public async Task<IActionResult> About(string userId)
     {
-        var user = await _userManager.GetUserAsync(User);
-        user!.Posts = _projectContext.Posts
+        var user = (await _userManager.FindByIdAsync(userId))!;
+        
+        user.Posts = _projectContext.Posts
             .Include(post => post.Likes)
             .Include(post => post.Comments)
             .Where(post => post.User!.Id == user.Id)
             .ToList();
+        var follow = _projectContext.Follows
+            .Include(follow1 => follow1.FollowerUser)
+            .Include(follow1 => follow1.FollowingUser)
+            .Where(follow1 => follow1.FollowingUser.Id == user.Id)
+            .ToList();
+        var following = _projectContext.Follows
+            .Include(follow1 => follow1.FollowerUser)
+            .Include(follow1 => follow1.FollowingUser)
+            .Where(follow1 => follow1.FollowerUser.Id == user.Id)
+            .ToList();
 
-        return View(user);
+
+        AboutViewModel model = new()
+        {
+            Follows = follow,
+            User = user,
+            Folowing = following
+        };
+
+        return View(model);
     }
-    
+
     [HttpGet]
     public IActionResult FullInfo()
     {
@@ -224,18 +254,20 @@ public class AccountsController : Controller
     [HttpGet]
     public IActionResult FillInfoPost(string id)
     {
-        if (_projectContext.Posts.Any(post => post.User.Id == id))
+        if (_projectContext.Posts.Any(post => post.Id.ToString() == id))
         {
             var post = _projectContext.Posts
                 .Include(post => post.User)
                 .Include(post => post.Likes)
                 .Include(post => post.Comments)
-                .FirstOrDefault(post => post.User.Id == id);
+                .ThenInclude(comment => comment.User)
+                .FirstOrDefault(post => post.Id.ToString() == id);
             LeaveACommentViewModel postComment = new() { Post = post! };
             return View(postComment);
         }
         return NotFound();
     }
+
     
     [HttpPost]
     public async Task<IActionResult> LeaveAComment(LeaveACommentViewModel model)
@@ -259,7 +291,7 @@ public class AccountsController : Controller
         _projectContext.Comments.Add(comment);
         await _projectContext.SaveChangesAsync();
 
-        return RedirectToAction("FillInfoPost", new { id = post.User!.Id });
+        return RedirectToAction("FillInfoPost", new { id = model.Post.User.Id});
     }
 
     [HttpPost]
@@ -279,7 +311,7 @@ public class AccountsController : Controller
             var likeRemove = _projectContext.Likes.FirstOrDefault(like1 => like1.PostId == model.Post.Id)!;
             _projectContext.Remove(likeRemove);
             await _projectContext.SaveChangesAsync();
-            return RedirectToAction("FillInfoPost", new { id = post.User!.Id });
+            return RedirectToAction("FillInfoPost", new { id = model.Post.User.Id });
         }
         
         Like like = new()
@@ -293,6 +325,38 @@ public class AccountsController : Controller
         _projectContext.Likes.Add(like);
         await _projectContext.SaveChangesAsync();
         
-        return RedirectToAction("FillInfoPost", new { id = post.User!.Id });
+        return RedirectToAction("FillInfoPost", new { id = model.Post.User.Id });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Follow(string followUserId)
+    {
+        var userToFollow = (await _projectContext.Users.FindAsync(followUserId))!;
+        var userFollowing = await _userManager.GetUserAsync(User);
+    
+        var checkOnFollow = _projectContext.Follows
+                .Where(follow => follow.FollowerUser.Id == followUserId)
+                .Any(follow => follow.FollowerUser.Id == followUserId);
+
+        if (!checkOnFollow)
+        {
+            Follow follow = new()
+            {
+                FollowerUser = userToFollow,
+                FollowerUserId = userToFollow.Id,
+                FollowingUser = userFollowing!,
+                FolowingUserId = userToFollow.Id
+            };
+            _projectContext.Follows.Add(follow);
+            await _projectContext.SaveChangesAsync();
+            return RedirectToAction("About", new {userId = userToFollow.Id});
+        }
+
+        var followRemove = await _projectContext.Follows
+            .FirstOrDefaultAsync(follow => follow.FollowerUser.Id == followUserId);
+        
+        _projectContext.Follows.Remove(followRemove!);
+        await _projectContext.SaveChangesAsync();
+        return RedirectToAction("About", new {userId = userToFollow.Id});
     }
 }

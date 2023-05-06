@@ -11,6 +11,7 @@ public class ProjectContext : IdentityDbContext
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Like> Likes { get; set; }
+    public DbSet<Follow> Follows { get; set; }
     public ProjectContext(DbContextOptions<ProjectContext> options) : base(options) { }
 
 }
