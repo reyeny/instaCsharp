@@ -1,0 +1,16 @@
+@model System.Collections.Generic.List<LabWork_59_Nyssanov_Yernar.Models.User>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+@foreach (var user in Model)
+{
+    <div class="user-tab mt-3">
+        <img src="@user.PathToFile" alt="Profile photo" class="user-profile-photo">
+        <div class="user-tab-info">
+            <div class="user-tab-username"><a asp-action="About" asp-route-userId="@user.Id">@user.UserName</a></div>
+        </div>
+    </div>
+}

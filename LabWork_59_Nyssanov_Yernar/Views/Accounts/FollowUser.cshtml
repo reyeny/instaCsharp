@@ -7,5 +7,10 @@
 
 @foreach (var user in Model)
 {
-    <a asp-action="About" asp-route-userId="@user.FollowingUser.Id">@user.FollowingUser.UserName</a>
+    <div class="user-tab mt-3">
+        <img src="@user.FollowingUser.PathToFile" alt="Profile photo" class="user-profile-photo">
+        <div class="user-tab-info">
+            <div class="user-tab-username"><a asp-action="About" asp-route-userId="@user.Id">@user.FollowingUser.UserName</a></div>
+        </div>
+    </div>
 }

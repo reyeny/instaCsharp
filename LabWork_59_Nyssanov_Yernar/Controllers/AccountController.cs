@@ -404,4 +404,13 @@ public class AccountsController : Controller
             .Include(follow => follow.FollowerUser)
             .ToList());
     }
+
+    [HttpGet]
+    public IActionResult AllUser()
+    {
+        var userIdentity = _userManager.GetUserAsync(User).Result;
+        var allUsers = _projectContext.Users.ToList();
+        allUsers.Remove(userIdentity!);
+        return View(allUsers);
+    }
 }

@@ -19,7 +19,9 @@
 						</div>
 						<div class="suggestions">
 							<div class="suggestions-yours">Suggestions For You</div>
-							<div class="suggestions-all">See All</div>
+							<a asp-action="AllUser">
+								<div class="suggestions-all">See All</div>
+							</a>
 						</div>
 						
 						@foreach (var user in Model.UsersAll)
