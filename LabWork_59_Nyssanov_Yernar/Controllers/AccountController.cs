@@ -142,16 +142,39 @@ public class AccountsController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        var users = _projectContext.Users.ToList();
-        var user = _userManager.GetUserAsync(User).Result;
-        users.Remove(user!);
+        var userIdentity = _userManager.GetUserAsync(User).Result;
+
+        var followedUsers = _projectContext.Follows
+            .Include(follow => follow.FollowingUser)
+            .Include(follow => follow.FollowerUser.Posts)
+            .ThenInclude(post => post.Likes)
+            .Include(follow => follow.FollowerUser.Posts)
+            .ThenInclude(post => post.Comments)
+            .Where(follow => follow.FollowingUser.Id == userIdentity!.Id)
+            .ToList();
+
+        var allUser = _projectContext.Users.ToList();
+
+        var followingUser = _projectContext.Follows
+            .Where(follow => follow.FolowingUserId == userIdentity.Id)
+            .ToList();
+
+        foreach (var followerUser in followingUser)
+        {
+            var user = allUser.FirstOrDefault(user1 => user1.Id == followerUser.FollowerUserId);
+            allUser.Remove(user!);
+        }
+        
+        
+        allUser.Remove(userIdentity);
 
         FeedViewModel model = new()
         {
-            Users = users,
-            meUser = user!
+            Follows = followedUsers,
+            meUser = userIdentity,
+            UsersAll = allUser
         };
-        
+
         return View(model);
     }
 
@@ -177,7 +200,7 @@ public class AccountsController : Controller
             .Where(follow1 => follow1.FollowerUser.Id == user.Id)
             .ToList();
 
-        bool checkOnFollow = follow.Any(follow1 => follow1.FollowerUser.Id == userIdentity.Id);
+        var checkOnFollow = follow.Any(follow1 => follow1.FollowerUser.Id == userIdentity.Id);
 
         AboutViewModel model = new()
         {
@@ -211,7 +234,7 @@ public class AccountsController : Controller
             user.Gender = model.Gender;
         }
 
-        var result = await _userManager.UpdateAsync(user);
+        await _userManager.UpdateAsync(user);
         return RedirectToAction("About");
     }
 
@@ -349,7 +372,7 @@ public class AccountsController : Controller
                 FollowerUser = userToFollow,
                 FollowerUserId = userToFollow.Id,
                 FollowingUser = userFollowing!,
-                FolowingUserId = userToFollow.Id
+                FolowingUserId = userFollowing!.Id
             };
             _projectContext.Follows.Add(follow);
             await _projectContext.SaveChangesAsync();
