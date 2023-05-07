@@ -19,28 +19,43 @@
     <div class="profile-info">
         <div class="profile-title mb-1rem">
             <h2>@Model.User.UserName</h2>
-            <button class="cta">Follow</button>
-            <button class="btn btn-outline-danger">
-                <a asp-action="FullInfo" asp-controller="Accounts" class="text-black">Add Info</a>
-            </button>
+            
+            @if (Model.User.Id == Model.IdentityUser.Id)
+            {
+                <button class="cta">
+                    <a asp-action="FullInfo" class="text-white">Add Info</a>
+                </button>
+                
+                <button class="cta">
+                    <a asp-action="CreatePost" class="text-white" asp-route-model="">
+                        Add Post
+                    </a>
+                </button>
+            }
+            else
+            {
+                <button class="cta">
+                    <a asp-action="Follow" class="text-white" asp-route-followUserId="@Model.User.Id">
+                        Follow
+                    </a>
+                </button>
+            }
         </div>
         <!-- Profile Stats -->
         <ul class="profile-numbers mb-1rem">
             <li>
-                <a href="#">
                     <span class="profile-posts">@Model.User.Posts.Count</span>
                     posts
-                </a>
             </li>
             <li>
-                <a href="#">
-                    <span class="profile-followers">@Model.Follows.Count</span>
+                <a asp-action="FollowUser" asp-route-userId="@Model.User.Id">
+                    <span class="profile-followers">@Model.Folowing.Count</span>
                     followers
                 </a>
             </li>
             <li>
-                <a href="#">
-                    <span class="profile-following">@Model.Folowing.Count</span>
+                <a asp-action="FollowingUser" asp-route-userId="@Model.User.Id">
+                    <span class="profile-following">@Model.Follows.Count</span>
                     following
                 </a>
             </li>

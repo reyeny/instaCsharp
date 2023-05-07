@@ -7,4 +7,6 @@ public class AboutViewModel
     public Models.User User { get; set; }
     public List<Follow> Follows { get; set; }
     public List<Follow> Folowing { get; set; }
+    public Models.User IdentityUser { get; set; }
+    public bool CheckOnFollow { get; set; }
 }

@@ -159,6 +159,7 @@ public class AccountsController : Controller
     public async Task<IActionResult> About(string userId)
     {
         var user = (await _userManager.FindByIdAsync(userId))!;
+        var userIdentity = await _userManager.GetUserAsync(User);
         
         user.Posts = _projectContext.Posts
             .Include(post => post.Likes)
@@ -176,12 +177,15 @@ public class AccountsController : Controller
             .Where(follow1 => follow1.FollowerUser.Id == user.Id)
             .ToList();
 
+        bool checkOnFollow = follow.Any(follow1 => follow1.FollowerUser.Id == userIdentity.Id);
 
         AboutViewModel model = new()
         {
             Follows = follow,
             User = user,
-            Folowing = following
+            Folowing = following,
+            IdentityUser = userIdentity!,
+            CheckOnFollow = checkOnFollow
         };
 
         return View(model);
@@ -358,5 +362,23 @@ public class AccountsController : Controller
         _projectContext.Follows.Remove(followRemove!);
         await _projectContext.SaveChangesAsync();
         return RedirectToAction("About", new {userId = userToFollow.Id});
+    }
+
+    [HttpGet]
+    public IActionResult FollowUser(string userId)
+    {
+        return View(_projectContext.Follows
+            .Where(follow => follow.FollowerUser.Id == userId)
+            .Include(follow => follow.FollowingUser)
+            .ToList());
+    }
+    
+    [HttpGet]
+    public IActionResult FollowingUser(string userId)
+    {
+        return View(_projectContext.Follows
+            .Where(follow => follow.FollowingUser.Id == userId)
+            .Include(follow => follow.FollowingUser)
+            .ToList());
     }
 }
