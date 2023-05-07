@@ -291,7 +291,7 @@ public class AccountsController : Controller
         _projectContext.Comments.Add(comment);
         await _projectContext.SaveChangesAsync();
 
-        return RedirectToAction("FillInfoPost", new { id = model.Post.User.Id});
+        return RedirectToAction("FillInfoPost", new { id = model.Post.Id});
     }
 
     [HttpPost]
@@ -311,7 +311,7 @@ public class AccountsController : Controller
             var likeRemove = _projectContext.Likes.FirstOrDefault(like1 => like1.PostId == model.Post.Id)!;
             _projectContext.Remove(likeRemove);
             await _projectContext.SaveChangesAsync();
-            return RedirectToAction("FillInfoPost", new { id = model.Post.User.Id });
+            return RedirectToAction("FillInfoPost", new { id = model.Post.Id });
         }
         
         Like like = new()
@@ -325,7 +325,7 @@ public class AccountsController : Controller
         _projectContext.Likes.Add(like);
         await _projectContext.SaveChangesAsync();
         
-        return RedirectToAction("FillInfoPost", new { id = model.Post.User.Id });
+        return RedirectToAction("FillInfoPost", new { id = model.Post.Id });
     }
 
     [HttpGet]
