@@ -4,12 +4,6 @@
     ViewBag.Title = "title";
     Layout = "_Layout";
 }
-@* *@
-@* <h2>@Model.Id</h2> *@
-@* <h2>@Model.Email</h2> *@
-@* <h2>@Model.UserName</h2> *@
-@* <h2><img src="@Model.PathToFile" alt=""></h2> *@
-@* <a asp-action="FullInfo">Доп Инфа</a> *@
 
 <div class="profile-wrap">
     <div class="profile-avatar">
@@ -22,10 +16,13 @@
             
             @if (Model.User.Id == Model.IdentityUser.Id)
             {
-                <button class="cta">
-                    <a asp-action="FullInfo" class="text-white">Add Info</a>
-                </button>
-                
+                @if (Model.IdentityUser.RealName is null)
+                {
+                    <button class="cta">
+                        <a asp-action="FullInfo" class="text-white">Add Info</a>
+                    </button>
+                }
+
                 <button class="cta">
                     <a asp-action="CreatePost" class="text-white" asp-route-model="">
                         Add Post

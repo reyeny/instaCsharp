@@ -7,5 +7,5 @@
 
 @foreach (var user in Model)
 {
-    <a asp-action="About" asp-route-userId="@user.FollowingUser.Id">@user.FollowingUser.UserName</a>
+    <a asp-action="About" asp-route-userId="@user.FollowerUser.Id">@user.FollowerUser.UserName</a>
 }

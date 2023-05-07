@@ -235,7 +235,7 @@ public class AccountsController : Controller
         }
 
         await _userManager.UpdateAsync(user);
-        return RedirectToAction("About");
+        return RedirectToAction("About", new {userId = _userManager.GetUserAsync(User).Result!.Id});
     }
 
     [HttpGet]
@@ -401,7 +401,7 @@ public class AccountsController : Controller
     {
         return View(_projectContext.Follows
             .Where(follow => follow.FollowingUser.Id == userId)
-            .Include(follow => follow.FollowingUser)
+            .Include(follow => follow.FollowerUser)
             .ToList());
     }
 }
