@@ -1,4 +1,5 @@
 using LabWork_59_Nyssanov_Yernar.DbContext;
+using LabWork_59_Nyssanov_Yernar.Extensions;
 using LabWork_59_Nyssanov_Yernar.Models;
 using LabWork_59_Nyssanov_Yernar.Models.PostUser;
 using LabWork_59_Nyssanov_Yernar.ViewModel.Post;
@@ -112,8 +113,7 @@ public class AccountsController : Controller
         if (!string.IsNullOrEmpty(model.Name))
         {
             user = (await _userManager.FindByNameAsync(model.Name))!;
-            if (user is null)
-                user = (await _userManager.FindByEmailAsync(model.Email))!;
+            if (user is null) user = (await _userManager.FindByEmailAsync(model.Email))!;
         }
         
         if (user is not null)
@@ -156,7 +156,7 @@ public class AccountsController : Controller
         var allUser = _projectContext.Users.ToList();
 
         var followingUser = _projectContext.Follows
-            .Where(follow => follow.FolowingUserId == userIdentity.Id)
+            .Where(follow => follow.FolowingUserId == userIdentity!.Id)
             .ToList();
 
         foreach (var followerUser in followingUser)
@@ -165,13 +165,11 @@ public class AccountsController : Controller
             allUser.Remove(user!);
         }
         
-        
-        allUser.Remove(userIdentity);
-
+        allUser.Remove(userIdentity!);
         FeedViewModel model = new()
         {
             Follows = followedUsers,
-            meUser = userIdentity,
+            meUser = userIdentity!,
             UsersAll = allUser
         };
 
@@ -200,7 +198,7 @@ public class AccountsController : Controller
             .Where(follow1 => follow1.FollowerUser.Id == user.Id)
             .ToList();
 
-        var checkOnFollow = follow.Any(follow1 => follow1.FollowerUser.Id == userIdentity.Id);
+        var checkOnFollow = follow.Any(follow1 => follow1.FollowerUser.Id == userIdentity!.Id);
 
         AboutViewModel model = new()
         {
@@ -345,8 +343,8 @@ public class AccountsController : Controller
         {
             UserId = user!.Id,
             User = user,
-            Post = post!,
-            PostId = post!.Id
+            Post = post,
+            PostId = post.Id
         };
         
         _projectContext.Likes.Add(like);
@@ -406,11 +404,30 @@ public class AccountsController : Controller
     }
 
     [HttpGet]
-    public IActionResult AllUser()
+    public IActionResult AllUserSearch()
     {
         var userIdentity = _userManager.GetUserAsync(User).Result;
         var allUsers = _projectContext.Users.ToList();
         allUsers.Remove(userIdentity!);
-        return View(allUsers);
+
+        SearchViewModel model = new() { Users = allUsers };
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult AllUserSearch(SearchViewModel model)
+    {
+        var upper = model.Name.ToUpper();
+        var users = _projectContext.Users
+            .WhereIf(!string.IsNullOrEmpty(upper), u =>
+                u.UserName!.Contains(upper)
+                || u.Email!.Contains(upper)
+                || (u.UserName != null && u.UserName.Contains(upper))).ToList();
+        
+        var userIdentity = _userManager.GetUserAsync(User).Result;
+        users.Remove(userIdentity!);
+
+        SearchViewModel searchViewModel = new() { Users = users };
+        return View(searchViewModel);
     }
 }

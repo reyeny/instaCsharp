@@ -1,7 +1,7 @@
 @model LabWork_59_Nyssanov_Yernar.ViewModel.Post.LeaveACommentViewModel
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "инфа о посте";
     Layout = "_Layout";
 }
 
@@ -54,6 +54,7 @@
 					<div class="post-footer-add-comment">
 						<form id="comment" method="post" asp-action="LeaveAComment" enctype="multipart/form-data">
 							<textarea aria-label="Add a comment…" placeholder="Add a comment…" class="post-footer-comment-input" asp-for="Comment"></textarea>
+							<span asp-validation-for="@Model.Comment" class="text-danger"></span>
 							<button type="submit">Post</button>
 							<input type="hidden" asp-for="Post.Id" value="@Model.Post.Id"/>
 							<input type="hidden" asp-for="Post.User.Id" value="@Model.Post.User.Id">

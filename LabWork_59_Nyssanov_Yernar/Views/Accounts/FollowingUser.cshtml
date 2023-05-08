@@ -1,7 +1,7 @@
 @model System.Collections.Generic.List<LabWork_59_Nyssanov_Yernar.Models.PostUser.Follow>
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "подписки";
     Layout = "_Layout";
 }
 
@@ -10,7 +10,7 @@
     <div class="user-tab mt-3">
         <img src="@user.FollowerUser.PathToFile" alt="Profile photo" class="user-profile-photo">
         <div class="user-tab-info">
-            <div class="user-tab-username"><a asp-action="About" asp-route-userId="@user.Id">@user.FollowerUser.UserName</a></div>
+            <div class="user-tab-username"><a asp-action="About" asp-route-userId="@user.FollowerUser.Id">@user.FollowerUser.UserName</a></div>
         </div>
     </div>
 }

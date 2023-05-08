@@ -1,7 +1,7 @@
 @model LabWork_59_Nyssanov_Yernar.ViewModel.Post.FeedViewModel
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "главная страница";
     Layout = "_Layout";
 }
 
@@ -19,11 +19,10 @@
 						</div>
 						<div class="suggestions">
 							<div class="suggestions-yours">Suggestions For You</div>
-							<a asp-action="AllUser">
+							<a asp-action="AllUserSearch">
 								<div class="suggestions-all">See All</div>
 							</a>
 						</div>
-						
 						@foreach (var user in Model.UsersAll)
 						{
 							<div class="suggested-users">

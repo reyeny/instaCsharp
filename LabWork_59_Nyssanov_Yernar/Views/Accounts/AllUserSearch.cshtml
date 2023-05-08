@@ -1,0 +1,40 @@
+@model LabWork_59_Nyssanov_Yernar.ViewModel.User.SearchViewModel
+
+@{
+    ViewBag.Title = "все пользователи";
+    Layout = "_Layout";
+}
+
+<form asp-action="AllUserSearch" method="post" class="form-inline my-2 my-lg-0">
+    <div class="input-group">
+        <span asp-validation-for="@Model.Name" class="text-danger"></span>
+        <input type="search" asp-for="Name">
+        <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Поиск</button>
+    </div>
+</form>
+@if (!Model.Users.Any())
+{
+    <p>Пользователи не найдены.</p>
+}
+else
+{
+    <h1>Результаты поиска:</h1>
+    <div class="row">
+        @foreach (var user in Model.Users)
+        {
+            <div class="user-tab mt-3">
+                <img src="@user.PathToFile" alt="Profile photo" class="user-profile-photo">
+                <div class="user-tab-info">
+                    <div class="user-tab-username"><a asp-action="About" asp-route-userId="@user.Id">@user.UserName</a></div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
